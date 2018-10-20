@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <cmath>
+#include <fstream>
 
 #include  "./lib/newmat.h"
 #include "./lib/newmatio.h"
@@ -73,11 +74,10 @@ int main() {
    double time_before, time_after, diff;
 
    // read input
-   cout << "The exponent is: ";
+   cout << "Enter the exponent : ";
    cin >> expo;
-   cout << "The number of rows/cols is: ";
+   cout << "Enter the number of rows/cols : ";
    cin >> rows;
-
    //Real a[] = { 1, 2, 3, 4 };
    Matrix B(rows, rows);
    Matrix C(rows, rows);
@@ -101,7 +101,45 @@ int main() {
   time_after = clock();
   diff = ((float) time_after - (float)time_before);
   cout << "it took " << diff/CLOCKS_PER_SEC << " seconds to complete" << endl;
-   //cout << setw(10) << setprecision(5) << D;
-   //cout << setw(10) << setprecision(5) << B - C;
+
+   // run times
+   int data_points = 250;
+   int var_exp;
+   ofstream bfruntime ("bfruntime.txt");   // brute force runtimes
+   ofstream rsruntime ("rsruntime.txt");   // repeated squaring 
+   
+   A = generate_random_matrix(5);
+
+  cout << "Runtime experiments \n";
+
+   for (int i = 1; i < data_points; i++)
+   {
+      time_before = clock();
+      var_exp = i * 1000;
+      B = brute_force(A, var_exp, 5);
+      time_after = clock();
+      diff = ((float) time_after - (float)time_before);
+      if (bfruntime.is_open())
+      {
+          bfruntime << diff << endl;
+      }
+   }
+   bfruntime.close();
+
+
+   for (int i = 1; i < data_points; i++)
+   {
+      time_before = clock();
+      var_exp = i * 1000;
+      B = repeated_squaring(A, var_exp, 5);
+      time_after = clock();
+      diff = ((float) time_after - (float)time_before);
+      if (rsruntime.is_open())
+      {
+          rsruntime << diff << endl;
+      }
+   }
+   rsruntime.close();
+
    return 0;
 }
